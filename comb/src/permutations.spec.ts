@@ -260,6 +260,7 @@ describe('Permutations', () => {
 
       let i = 0;
       for (const perm of permutations) {
+        console.log({ perm, i });
         expect(perm).toEqual(animalPermutations[i]);
         ++i;
       }
@@ -270,7 +271,6 @@ describe('Permutations', () => {
     it('should reset the iterator', () => {
       const permutations = permutationsIterator([man, dog, cat, ant], {
         compare: compareAnimal,
-        slice: true,
       });
 
       let i = 0;

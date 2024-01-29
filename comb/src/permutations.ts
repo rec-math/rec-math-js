@@ -38,25 +38,55 @@ export const permutationsIterator = <T>(
   items: T[],
   options: PermutationsOptions<T> = {},
 ) => {
-  const next = permutations(items, options);
+  const { compare } = options;
+
+  let isFirst = true;
+  if (options.slice !== false) {
+    // Need to be careful when working with potentially repeated items because
+    // the permutations generator is not "stable" in the sense of a stable sort.
+    const initialItems = items.slice();
+    initialItems.sort(compare);
+    let workingItems = initialItems.slice();
+    let getNext = permutations(workingItems, options);
+
+    return {
+      next() {
+        if (isFirst) {
+          console.log('First');
+          isFirst = false;
+          return { done: false, value: workingItems.slice() };
+        }
+        console.log('Next');
+        return getNext() === null
+          ? { done: true, value: workingItems.slice() }
+          : { done: false, value: workingItems.slice() };
+      },
+      [Symbol.iterator]() {
+        // Reset to first lexicographic permutation.
+        workingItems = initialItems.slice();
+        getNext = permutations(workingItems, options);
+        isFirst = true;
+        return this;
+      },
+    };
+  }
+
+  // Don't care about slicing the items.
+  items.sort(compare);
+  const getNext = permutations(items, options);
   const done = { done: true, value: items };
   const value = { done: false, value: items };
-  let isFirst = true;
   return {
     next() {
       if (isFirst) {
         isFirst = false;
-        return options.slice ? { done: false, value: items.slice() } : value;
+        return value;
       }
-      return next() === null
-        ? done
-        : options.slice
-          ? { done: false, value: items.slice() }
-          : value;
+      return getNext() === null ? done : value;
     },
     [Symbol.iterator]() {
       // Reset to first lexicographic permutation.
-      items.sort(options.compare);
+      items.sort(compare);
       isFirst = true;
       return this;
     },

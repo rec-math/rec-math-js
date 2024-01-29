@@ -1,16 +1,31 @@
 {
   "name": "rec-math",
-  "version": "1.0.0",
+  "version": "0.1.0-dev",
   "description": "Packages for recreational mathematics in the browser (or NodeJS)",
-  "main": "index.js",
+  "homepage": "https://rec-math.github.io/",
+  "bugs": "https://github.com/rec-math/rec-math-js/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rec-math/rec-math-js.git"
+  },
+  "author": "pbuk (https://github.com/pbuk)",
+  "keywords": [],
+  "license": "MIT",
+  "type": "module",
+  "main": "esm/index.js",
+  "browser": "dist/index.min.js",
+  "files": [
+    "dist",
+    "esm",
+    "types"
+  ],
   "scripts": {
-    "fix": "eslint . --fix && prettier . --write",
+    "build": "rimraf dist && npm run check && npm run test:unit && rollup -c && tsc --project tsconfig.types.json",
+    "check": "eslint . && prettier . --ignore-path .eslintignore --check",
+    "fix": "eslint . --fix && prettier . --ignore-path .eslintignore --write",
     "test:unit": "jest",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@types/jest": "^29.5.11",
     "eslint-plugin-jest": "^27.6.3",
@@ -20,8 +35,13 @@
     "typescript": "^5.3.3"
   },
   "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.1.6",
     "@typescript-eslint/eslint-plugin": "^6.19.1",
     "@typescript-eslint/parser": "^6.19.1",
-    "eslint": "^8.56.0"
+    "camelcase": "^8.0.0",
+    "eslint": "^8.56.0",
+    "rimraf": "^5.0.5",
+    "rollup": "^4.9.6"
   }
 }

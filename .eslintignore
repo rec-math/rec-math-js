@@ -1,8 +1,5 @@
-# .gitignore
-
-node_modules
-
 # Distribution files.
 
 dist
 esm
+types
