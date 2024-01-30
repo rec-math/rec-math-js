@@ -254,36 +254,22 @@ describe('Permutations', () => {
 
   describe('permutationsIterator()', () => {
     it('should work with repeated items with a compare function and is not "stable" (see docs)', () => {
-      const permutations = permutationsIterator([man, dog, cat, ant], {
+      const perms = permutationsIterator([man, dog, cat, ant], {
         compare: compareAnimal,
       });
 
-      let i = 0;
-      for (const perm of permutations) {
-        console.log({ perm, i });
-        expect(perm).toEqual(animalPermutations[i]);
-        ++i;
-      }
-      expect(i).toBe(animalPermutations.length);
-      expect(permutations.next().done).toBe(true);
+      expect(Array.from(perms)).toEqual(animalPermutations);
     });
 
     it('should reset the iterator', () => {
-      const permutations = permutationsIterator([man, dog, cat, ant], {
+      const perms = permutationsIterator([man, dog, cat, ant], {
         compare: compareAnimal,
       });
 
-      let i = 0;
-      for (const perm of permutations) {
-        expect(perm).toEqual(animalPermutations[i]);
-        ++i;
-      }
-      expect(i).toBe(animalPermutations.length);
-      expect(permutations.next().done).toBe(true);
-
-      // This wouldn
-      const perms = Array.from(permutations);
-      expect(perms).toEqual(animalPermutations);
+      expect(perms.next().value).toEqual(animalPermutations[0]);
+      expect(perms.next().value).toEqual(animalPermutations[1]);
+      expect(Array.from(perms)).toEqual(animalPermutations);
+      expect(perms.next().done).toBe(true);
     });
   });
 });

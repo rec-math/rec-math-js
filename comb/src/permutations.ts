@@ -46,17 +46,16 @@ export const permutationsIterator = <T>(
     // the permutations generator is not "stable" in the sense of a stable sort.
     const initialItems = items.slice();
     initialItems.sort(compare);
+
     let workingItems = initialItems.slice();
     let getNext = permutations(workingItems, options);
 
     return {
       next() {
         if (isFirst) {
-          console.log('First');
           isFirst = false;
           return { done: false, value: workingItems.slice() };
         }
-        console.log('Next');
         return getNext() === null
           ? { done: true, value: workingItems.slice() }
           : { done: false, value: workingItems.slice() };
