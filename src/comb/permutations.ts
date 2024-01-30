@@ -37,7 +37,7 @@ export const permutations = <T>(
 export const permutationsIterator = <T>(
   items: T[],
   options: PermutationsOptions<T> = {},
-) => {
+): IterableIterator<T[]> => {
   const { compare } = options;
 
   let isFirst = true;
@@ -54,11 +54,11 @@ export const permutationsIterator = <T>(
       next() {
         if (isFirst) {
           isFirst = false;
-          return { done: false, value: workingItems.slice() };
+          return { value: workingItems.slice() };
         }
         return getNext() === null
           ? { done: true, value: workingItems.slice() }
-          : { done: false, value: workingItems.slice() };
+          : { value: workingItems.slice() };
       },
       [Symbol.iterator]() {
         // Reset to first lexicographic permutation.
@@ -74,7 +74,7 @@ export const permutationsIterator = <T>(
   items.sort(compare);
   const getNext = permutations(items, options);
   const done = { done: true, value: items };
-  const value = { done: false, value: items };
+  const value = { value: items };
   return {
     next() {
       if (isFirst) {

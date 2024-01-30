@@ -17,13 +17,7 @@ export declare const permutations: <T>(items: T[], options?: PermutationsOptions
  * @param options
  * @returns
  */
-export declare const permutationsIterator: <T>(items: T[], options?: PermutationsOptions<T>) => {
-    next(): {
-        done: boolean;
-        value: T[];
-    };
-    [Symbol.iterator](): any;
-};
+export declare const permutationsIterator: <T>(items: T[], options?: PermutationsOptions<T>) => IterableIterator<T[]>;
 /**
  * Get the next permutation for an array of items.
  *
