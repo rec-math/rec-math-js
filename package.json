@@ -20,7 +20,7 @@
     "types"
   ],
   "scripts": {
-    "build": "rimraf dist esm && npm run check && npm run test:unit && rollup -c && tsc --project tsconfig.types.json",
+    "build": "rimraf dist esm types && npm run check && npm run test:unit && rollup -c && tsc --project tsconfig.types.json",
     "check": "eslint . && prettier . --ignore-path .eslintignore --check",
     "fix": "eslint . --fix && prettier . --ignore-path .eslintignore --write",
     "test:unit": "jest",

@@ -66,7 +66,7 @@ for (const moduleName of modules) {
  `;
 
   config.push({
-    input: `${moduleName}/src/index.ts`,
+    input: `src/${moduleName}/index.ts`,
     output: [
       {
         banner,
