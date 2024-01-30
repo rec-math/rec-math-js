@@ -3,6 +3,7 @@
 import { readFileSync } from 'node:fs';
 
 import camelCase from 'camelcase';
+import json from '@rollup/plugin-json';
 import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
 
@@ -23,6 +24,9 @@ const banner = `/*! ${name} v${pkg.version} ${datetime}
  *! ${pkg.license} license.
  */
 `;
+const target = 'es2017';
+const compilerOptions = { module: 'esnext', moduleResolution: 'bundler' };
+const exclude = ['**/__tests__', '**/*.{test,spec}.ts'];
 
 const modules = ['comb'];
 
@@ -37,7 +41,7 @@ const config = [
         sourcemap: true,
       },
     ],
-    plugins: [typescript({ module: 'esnext' })],
+    plugins: [typescript({ exclude, compilerOptions }), json()],
   },
   {
     input: 'src/index.ts',
@@ -51,7 +55,8 @@ const config = [
       },
     ],
     plugins: [
-      typescript({ module: 'esnext' }),
+      typescript({ exclude, compilerOptions: { ...compilerOptions, target } }),
+      json(),
       terser({ output: { comments: /^!/ } }),
     ],
   },
@@ -66,24 +71,50 @@ for (const moduleName of modules) {
  `;
 
   config.push({
-    input: `src/${moduleName}/index.ts`,
+    input: `src/${moduleName}.ts`,
     output: [
       {
+        // Node module.
+        banner,
+        file: `esm/${moduleName}.js`,
+        format: 'es',
+        sourcemap: true,
+      },
+    ],
+    plugins: [
+      typescript({
+        exclude,
+        compilerOptions: {
+          ...compilerOptions,
+          target,
+          // declaration: true,
+          // declarationDir: '.',
+        },
+      }),
+    ],
+  });
+
+  config.push({
+    input: `src/${moduleName}.ts`,
+    output: [
+      {
+        // JavaScript module for browser import download.
+        banner,
+        file: `esm/${moduleName}.min.js`,
+        format: 'es',
+        sourcemap: true,
+      },
+      {
+        // JavaScript package for browser <script src="..."> download.
         banner,
         file: `dist/${moduleName}.min.js`,
         format: 'iife',
         name: `${name}.${moduleName}`,
         sourcemap: true,
       },
-      {
-        banner,
-        file: `esm/${moduleName}.min.js`,
-        format: 'es',
-        sourcemap: true,
-      },
     ],
     plugins: [
-      typescript({ module: 'esnext' }),
+      typescript({ exclude, compilerOptions: { ...compilerOptions, target } }),
       terser({ output: { comments: /^!/ } }),
     ],
   });

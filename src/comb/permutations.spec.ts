@@ -1,47 +1,52 @@
 import {
   nextPermutation,
   nextPermutationCompare,
-  permutations,
   permutationsOf,
-  type CompareFunction,
 } from './permutations';
 
-interface Animal {
-  name: string;
-  legs: number;
-}
-
-const man: Animal = { name: 'man', legs: 2 };
-const dog: Animal = { name: 'dog', legs: 4 };
-const cat: Animal = { name: 'cat', legs: 4 };
-const ant: Animal = { name: 'ant', legs: 6 };
-
-const animalPermutations = [
-  [man, dog, cat, ant],
-  [man, dog, ant, cat],
-  // Note that cat comes before dog here because the implementation is not
-  // stable by design.
-  [man, ant, cat, dog],
-  [dog, man, cat, ant],
-  [dog, man, ant, cat],
-  [dog, cat, man, ant],
-  [dog, cat, ant, man],
-  [dog, ant, man, cat],
-  [dog, ant, cat, man],
-  // Again cat comes before dog.
-  [ant, man, cat, dog],
-  [ant, dog, man, cat],
-  [ant, dog, cat, man],
+const permutationsOfNumbers = [
+  [1, 2, 3],
+  [1, 3, 2],
+  [2, 1, 3],
+  [2, 3, 1],
+  [3, 1, 2],
+  [3, 2, 1],
 ];
 
-const BIG_1 = BigInt(1);
-const BIG_2 = BigInt(2);
-const BIG_2A = BigInt(2);
-const BIG_3 = BigInt(3);
+const permutationsOfBigNumbers = [
+  [1n, 2n, 2n, 3n],
+  [1n, 2n, 3n, 2n],
+  [1n, 3n, 2n, 2n],
+  [2n, 1n, 2n, 3n],
+  [2n, 1n, 3n, 2n],
+  [2n, 2n, 1n, 3n],
+  [2n, 2n, 3n, 1n],
+  [2n, 3n, 1n, 2n],
+  [2n, 3n, 2n, 1n],
+  [3n, 1n, 2n, 2n],
+  [3n, 2n, 1n, 2n],
+  [3n, 2n, 2n, 1n],
+];
 
-const compareAnimal: CompareFunction<Animal> = (a, b) => a.legs - b.legs;
+const permutationsOfStringLengths = [
+  ['d', 'cc', 'aaa', 'bbb'],
+  // Note that 'bbb' comes before 'aaa' in the next iteration because the
+  // implementation is not "stable" (in the sense of a stable sort).
+  ['d', 'bbb', 'cc', 'aaa'],
+  ['d', 'bbb', 'aaa', 'cc'],
+  // Now 'bbb' and 'aaa' swap back.
+  ['cc', 'd', 'aaa', 'bbb'],
+  ['cc', 'bbb', 'd', 'aaa'],
+  ['cc', 'bbb', 'aaa', 'd'],
+  ['aaa', 'd', 'cc', 'bbb'],
+  ['aaa', 'd', 'bbb', 'cc'],
+  ['aaa', 'cc', 'd', 'bbb'],
+  ['aaa', 'cc', 'bbb', 'd'],
+  ['aaa', 'bbb', 'd', 'cc'],
+  ['aaa', 'bbb', 'cc', 'd'],
+];
 
-describe('Permutations', () => {
+describe('comb/permutations unit tests', () => {
   describe('nextPermutation()', () => {
     it('should work with distinct items', () => {
       const items = [1, 2, 3];
@@ -107,170 +112,78 @@ describe('Permutations', () => {
   });
 
   describe('nextPermutationCompare()', () => {
-    it('should work with distinct items', () => {
-      const items = [man, dog, ant];
-
-      expect(nextPermutationCompare(items, compareAnimal)).toBeUndefined();
-      expect(items).toEqual([man, ant, dog]);
-
-      expect(nextPermutationCompare(items, compareAnimal)).toBeUndefined();
-      expect(items).toEqual([dog, man, ant]);
-
-      expect(nextPermutationCompare(items, compareAnimal)).toBeUndefined();
-      expect(items).toEqual([dog, ant, man]);
-
-      expect(nextPermutationCompare(items, compareAnimal)).toBeUndefined();
-      expect(items).toEqual([ant, man, dog]);
-
-      expect(nextPermutationCompare(items, compareAnimal)).toBeUndefined();
-      expect(items).toEqual([ant, dog, man]);
-
-      expect(nextPermutationCompare(items, compareAnimal)).toBe(null);
-      expect(items).toEqual([ant, dog, man]);
-    });
-
     it('should work with repeated items and is not "stable" (see docs)', () => {
-      const items = [man, dog, cat, ant];
+      const strings = ['aaa', 'bbb', 'cc', 'd'];
+      const compare = (a: string, b: string) => a.length - b.length;
 
-      expect(nextPermutationCompare(items, compareAnimal)).toBeUndefined();
-      expect(items).toEqual([man, dog, ant, cat]);
-
-      // Note that cat comes before dog here because the implementation is not
-      // stable by design.
-      expect(nextPermutationCompare(items, compareAnimal)).toBeUndefined();
-      expect(items).toEqual([man, ant, cat, dog]);
-
-      expect(nextPermutationCompare(items, compareAnimal)).toBeUndefined();
-      expect(items).toEqual([dog, man, cat, ant]);
-
-      expect(nextPermutationCompare(items, compareAnimal)).toBeUndefined();
-      expect(items).toEqual([dog, man, ant, cat]);
-
-      expect(nextPermutationCompare(items, compareAnimal)).toBeUndefined();
-      expect(items).toEqual([dog, cat, man, ant]);
-
-      expect(nextPermutationCompare(items, compareAnimal)).toBeUndefined();
-      expect(items).toEqual([dog, cat, ant, man]);
-
-      expect(nextPermutationCompare(items, compareAnimal)).toBeUndefined();
-      expect(items).toEqual([dog, ant, man, cat]);
-
-      expect(nextPermutationCompare(items, compareAnimal)).toBeUndefined();
-      expect(items).toEqual([dog, ant, cat, man]);
-
-      // Again cat comes before dog.
-      expect(nextPermutationCompare(items, compareAnimal)).toBeUndefined();
-      expect(items).toEqual([ant, man, cat, dog]);
-
-      expect(nextPermutationCompare(items, compareAnimal)).toBeUndefined();
-      expect(items).toEqual([ant, dog, man, cat]);
-
-      expect(nextPermutationCompare(items, compareAnimal)).toBeUndefined();
-      expect(items).toEqual([ant, dog, cat, man]);
-
-      expect(nextPermutationCompare(items, compareAnimal)).toBe(null);
-      expect(items).toEqual([ant, dog, cat, man]);
-    });
-  });
-
-  describe('permutations()', () => {
-    it('should work with distinct items', () => {
-      const next = permutations([1, 2, 3]);
-
-      expect(next()).toEqual([1, 3, 2]);
-      expect(next()).toEqual([2, 1, 3]);
-      expect(next()).toEqual([2, 3, 1]);
-      expect(next()).toEqual([3, 1, 2]);
-      expect(next()).toEqual([3, 2, 1]);
-      expect(next()).toBe(null);
-    });
-
-    it('should work with repeated items', () => {
-      const next = permutations([1, 2, 2, 3]);
-
-      expect(next()).toEqual([1, 2, 3, 2]);
-      expect(next()).toEqual([1, 3, 2, 2]);
-      expect(next()).toEqual([2, 1, 2, 3]);
-      expect(next()).toEqual([2, 1, 3, 2]);
-      expect(next()).toEqual([2, 2, 1, 3]);
-      expect(next()).toEqual([2, 2, 3, 1]);
-      expect(next()).toEqual([2, 3, 1, 2]);
-      expect(next()).toEqual([2, 3, 2, 1]);
-      expect(next()).toEqual([3, 1, 2, 2]);
-      expect(next()).toEqual([3, 2, 1, 2]);
-      expect(next()).toEqual([3, 2, 2, 1]);
-      expect(next()).toBe(null);
-    });
-
-    it('should work with distinct items with a compare function', () => {
-      const next = permutations([man, dog, ant], { compare: compareAnimal });
-
-      expect(next()).toEqual([man, ant, dog]);
-      expect(next()).toEqual([dog, man, ant]);
-      expect(next()).toEqual([dog, ant, man]);
-      expect(next()).toEqual([ant, man, dog]);
-      expect(next()).toEqual([ant, dog, man]);
-      expect(next()).toBe(null);
-    });
-
-    it('should work with repeated items with a compare function and is not "stable" (see docs)', () => {
-      const next = permutations([man, dog, cat, ant], {
-        compare: compareAnimal,
-      });
-
-      expect(next()).toEqual([man, dog, ant, cat]);
-      // Note that cat comes before dog here because the implementation is not
-      // stable by design.
-      expect(next()).toEqual([man, ant, cat, dog]);
-      expect(next()).toEqual([dog, man, cat, ant]);
-      expect(next()).toEqual([dog, man, ant, cat]);
-      expect(next()).toEqual([dog, cat, man, ant]);
-      expect(next()).toEqual([dog, cat, ant, man]);
-      expect(next()).toEqual([dog, ant, man, cat]);
-      expect(next()).toEqual([dog, ant, cat, man]);
-      // Again cat comes before dog.
-      expect(next()).toEqual([ant, man, cat, dog]);
-      expect(next()).toEqual([ant, dog, man, cat]);
-      expect(next()).toEqual([ant, dog, cat, man]);
-      expect(next()).toBe(null);
-    });
-
-    it('should work with repeated BigInts', () => {
-      const next = permutations([BIG_1, BIG_2, BIG_2A, BIG_3]);
-
-      expect(next()).toEqual([BIG_1, BIG_2, BIG_3, BIG_2]);
-      expect(next()).toEqual([BIG_1, BIG_3, BIG_2, BIG_2]);
-      expect(next()).toEqual([BIG_2, BIG_1, BIG_2, BIG_3]);
-      expect(next()).toEqual([BIG_2, BIG_1, BIG_3, BIG_2]);
-      expect(next()).toEqual([BIG_2, BIG_2, BIG_1, BIG_3]);
-      expect(next()).toEqual([BIG_2, BIG_2, BIG_3, BIG_1]);
-      expect(next()).toEqual([BIG_2, BIG_3, BIG_1, BIG_2]);
-      expect(next()).toEqual([BIG_2, BIG_3, BIG_2, BIG_1]);
-      expect(next()).toEqual([BIG_3, BIG_1, BIG_2, BIG_2]);
-      expect(next()).toEqual([BIG_3, BIG_2, BIG_1, BIG_2]);
-      expect(next()).toEqual([BIG_3, BIG_2, BIG_2, BIG_1]);
-      expect(next()).toBe(null);
+      for (let i = 0; nextPermutationCompare(strings, compare) !== null; ++i) {
+        expect(strings).toEqual(permutationsOfStringLengths[i]);
+      }
     });
   });
 
   describe('permutationsOf()', () => {
-    it('should work with repeated items with a compare function and is not "stable" (see docs)', () => {
-      const perms = permutationsOf([man, dog, cat, ant], {
-        compare: compareAnimal,
-      });
-
-      expect(Array.from(perms)).toEqual(animalPermutations);
+    it('should work with numbers', () => {
+      let i = 0;
+      for (const perm of permutationsOf([3, 2, 1])) {
+        expect(perm).toEqual(permutationsOfNumbers[i]);
+        ++i;
+      }
     });
 
-    it('should reset the iterator', () => {
-      const perms = permutationsOf([man, dog, cat, ant], {
-        compare: compareAnimal,
-      });
+    it('should work with repeated BigInts', () => {
+      let i = 0;
+      for (const perm of permutationsOf([3n, 2n, 1n, 2n])) {
+        expect(perm).toEqual(permutationsOfBigNumbers[i]);
+        ++i;
+      }
+    });
 
-      expect(perms.next().value).toEqual(animalPermutations[0]);
-      expect(perms.next().value).toEqual(animalPermutations[1]);
-      expect(Array.from(perms)).toEqual(animalPermutations);
+    it('should work with repeated items with a compare function and is not "stable" (see docs)', () => {
+      const strings = ['aaa', 'bbb', 'cc', 'd'];
+      const compare = (a: string, b: string) => a.length - b.length;
+
+      let i = 0;
+      for (const perm of permutationsOf(strings, { compare })) {
+        expect(perm).toEqual(permutationsOfStringLengths[i]);
+        ++i;
+      }
+    });
+
+    it('should reset the iterator when slicing', () => {
+      const perms = permutationsOf([3, 2, 1], { slice: true });
+
+      expect(perms.next().value).toEqual(permutationsOfNumbers[0]);
+      expect(perms.next().value).toEqual(permutationsOfNumbers[1]);
+
+      expect(Array.from(perms)).toEqual(permutationsOfNumbers);
+
       expect(perms.next().done).toBe(true);
+
+      expect(Array.from(perms)).toEqual(permutationsOfNumbers);
+    });
+
+    it('should reset the iterator when not slicing', () => {
+      const perms = permutationsOf([3, 2, 1]);
+
+      expect(perms.next().value).toEqual(permutationsOfNumbers[0]);
+      expect(perms.next().value).toEqual(permutationsOfNumbers[1]);
+
+      expect(Array.from(perms)).not.toEqual(permutationsOfNumbers);
+
+      let i = 0;
+      for (const perm of perms) {
+        expect(perm).toEqual(permutationsOfNumbers[i]);
+        ++i;
+      }
+
+      expect(perms.next().done).toBe(true);
+
+      i = 0;
+      for (const perm of perms) {
+        expect(perm).toEqual(permutationsOfNumbers[i]);
+        ++i;
+      }
     });
   });
 });

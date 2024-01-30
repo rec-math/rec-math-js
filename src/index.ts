@@ -1,1 +1,1 @@
-export * as comb from './comb';
+export { version } from '../package.json';

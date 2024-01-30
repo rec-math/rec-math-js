@@ -13,6 +13,7 @@
   "license": "MIT",
   "type": "module",
   "main": "esm/index.js",
+  "module": "esm",
   "browser": "dist/index.min.js",
   "files": [
     "dist",
@@ -23,7 +24,7 @@
     "build": "rimraf dist esm types && npm run check && npm run test:unit && rollup -c && tsc --project tsconfig.types.json",
     "check": "eslint . && prettier . --ignore-path .eslintignore --check",
     "fix": "eslint . --fix && prettier . --ignore-path .eslintignore --write",
-    "test:unit": "jest",
+    "test:unit": "jest src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -35,8 +36,10 @@
     "typescript": "^5.3.3"
   },
   "devDependencies": {
+    "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
+    "@tsconfig/node18": "^18.2.2",
     "@typescript-eslint/eslint-plugin": "^6.19.1",
     "@typescript-eslint/parser": "^6.19.1",
     "camelcase": "^8.0.0",

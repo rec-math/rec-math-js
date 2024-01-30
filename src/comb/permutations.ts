@@ -10,12 +10,10 @@ export interface PermutationsOptions<T> {
 }
 
 /**
- * This will return a function that will
- * @param items
- * @param options
- * @returns
+ * This is a helper function to choose once between `nextPermutation()` or
+ * `nextPermutationCompare()` as required.
  */
-export const permutations = <T>(
+const getNextPermutation = <T>(
   items: T[],
   options: PermutationsOptions<T> = {},
 ) => {
@@ -33,9 +31,9 @@ export const permutations = <T>(
 /**
  * Get an iterator over the permutations of the elements of an array.
  *
- * The items are first sorted (using a compare function if provided as
- * `options.compare`) into ascending order, and then permuted lexicographically.
- * The provided array is mutated in place unless `options.slice` is `true`.
+ * The items are first sorted into ascending order (using a compare function if
+ * provided as `options.compare`) and then permuted lexicographically. The
+ * provided array is mutated in place unless `options.slice` is `true`.
  *
  * When using `options.compare`, note that although the initial sort is stable,
  * the permutation algorithm is not so the order of elements that compare as
@@ -43,15 +41,17 @@ export const permutations = <T>(
  *
  * Example usage:
  * ```
+ * // Works as expected.
  * for (const perm of permutationsOf([1, 2, 3])) {
  *   console.log(perm}
  * }
  *
+ * // Here we see that the order of items that compare equal is not stable.
  * const strings = ['aaa', 'bbb', 'cc', 'd'];
  * const compare = (a, b) => (a.length - b.length);
- * const perms = permutationsOf(strings, { compare }));
+ * const perms = permutationsOf(strings, { compare });
  * console.log(perm.next().value); // ['d', 'cc', 'aaa', 'bbb']
- * console.log(perm.next().value); // ['d', 'aaa', 'cc', 'bbb']
+ * console.log(perm.next().value); // ['d', 'bbb', 'cc', 'aaa']
  *
  * // Here we must use the `slice: true` option to get the expected result.
  * console.log(Array.from(permutationsOf([1, 2, 3], { slice: true })));
@@ -64,14 +64,14 @@ export const permutationsOf = <T>(
   const { compare } = options;
 
   let isFirst = true;
-  if (options.slice !== false) {
+  if (options.slice) {
     // Need to be careful when working with potentially repeated items because
     // the permutations generator is not "stable" in the sense of a stable sort.
     const initialItems = items.slice();
     initialItems.sort(compare);
 
     let workingItems = initialItems.slice();
-    let getNext = permutations(workingItems, options);
+    let getNext = getNextPermutation(workingItems, options);
 
     return {
       next() {
@@ -86,7 +86,7 @@ export const permutationsOf = <T>(
       [Symbol.iterator]() {
         // Reset to first lexicographic permutation.
         workingItems = initialItems.slice();
-        getNext = permutations(workingItems, options);
+        getNext = getNextPermutation(workingItems, options);
         isFirst = true;
         return this;
       },
@@ -95,7 +95,7 @@ export const permutationsOf = <T>(
 
   // Don't care about slicing the items.
   items.sort(compare);
-  const getNext = permutations(items, options);
+  const getNext = getNextPermutation(items, options);
   const done = { done: true, value: items };
   const value = { value: items };
   return {
