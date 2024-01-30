@@ -3,7 +3,9 @@ export type CompareFunction<T> = (a: T, b: T) => number;
 export type DirectlyComparableType = string | number | bigint;
 
 export interface PermutationsOptions<T> {
+  /** Compare function. */
   compare?: CompareFunction<T>;
+  /** Slice the items instead of iterating in place. */
   slice?: boolean;
 }
 
@@ -29,12 +31,33 @@ export const permutations = <T>(
 };
 
 /**
- * This will return a function that will
- * @param items
- * @param options
- * @returns
+ * Get an iterator over the permutations of the elements of an array.
+ *
+ * The items are first sorted (using a compare function if provided as
+ * `options.compare`) into ascending order, and then permuted lexicographically.
+ * The provided array is mutated in place unless `options.slice` is `true`.
+ *
+ * When using `options.compare`, note that although the initial sort is stable,
+ * the permutation algorithm is not so the order of elements that compare as
+ * equal may not be consistent.
+ *
+ * Example usage:
+ * ```
+ * for (const perm of permutationsOf([1, 2, 3])) {
+ *   console.log(perm}
+ * }
+ *
+ * const strings = ['aaa', 'bbb', 'cc', 'd'];
+ * const compare = (a, b) => (a.length - b.length);
+ * const perms = permutationsOf(strings, { compare }));
+ * console.log(perm.next().value); // ['d', 'cc', 'aaa', 'bbb']
+ * console.log(perm.next().value); // ['d', 'aaa', 'cc', 'bbb']
+ *
+ * // Here we must use the `slice: true` option to get the expected result.
+ * console.log(Array.from(permutationsOf([1, 2, 3], { slice: true })));
+ * ```
  */
-export const permutationsIterator = <T>(
+export const permutationsOf = <T>(
   items: T[],
   options: PermutationsOptions<T> = {},
 ): IterableIterator<T[]> => {

@@ -2,7 +2,7 @@ import {
   nextPermutation,
   nextPermutationCompare,
   permutations,
-  permutationsIterator,
+  permutationsOf,
   type CompareFunction,
 } from './permutations';
 
@@ -36,6 +36,7 @@ const animalPermutations = [
 
 const BIG_1 = BigInt(1);
 const BIG_2 = BigInt(2);
+const BIG_2A = BigInt(2);
 const BIG_3 = BigInt(3);
 
 const compareAnimal: CompareFunction<Animal> = (a, b) => a.legs - b.legs;
@@ -235,7 +236,7 @@ describe('Permutations', () => {
     });
 
     it('should work with repeated BigInts', () => {
-      const next = permutations([BIG_1, BIG_2, BIG_2, BIG_3]);
+      const next = permutations([BIG_1, BIG_2, BIG_2A, BIG_3]);
 
       expect(next()).toEqual([BIG_1, BIG_2, BIG_3, BIG_2]);
       expect(next()).toEqual([BIG_1, BIG_3, BIG_2, BIG_2]);
@@ -252,9 +253,9 @@ describe('Permutations', () => {
     });
   });
 
-  describe('permutationsIterator()', () => {
+  describe('permutationsOf()', () => {
     it('should work with repeated items with a compare function and is not "stable" (see docs)', () => {
-      const perms = permutationsIterator([man, dog, cat, ant], {
+      const perms = permutationsOf([man, dog, cat, ant], {
         compare: compareAnimal,
       });
 
@@ -262,7 +263,7 @@ describe('Permutations', () => {
     });
 
     it('should reset the iterator', () => {
-      const perms = permutationsIterator([man, dog, cat, ant], {
+      const perms = permutationsOf([man, dog, cat, ant], {
         compare: compareAnimal,
       });
 

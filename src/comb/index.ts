@@ -1,1 +1,1 @@
-export { permutations, permutationsIterator } from './permutations';
+export { permutations, permutationsOf } from './permutations';
