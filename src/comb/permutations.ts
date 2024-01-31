@@ -73,46 +73,57 @@ export const permutationsOf = <T>(
     let workingItems = initialItems.slice();
     let getNext = getNextPermutation(workingItems, options);
 
-    return {
-      next() {
-        if (isFirst) {
-          isFirst = false;
-          return { value: workingItems.slice() };
-        }
-        return getNext() === null
-          ? { done: true, value: workingItems.slice() }
-          : { value: workingItems.slice() };
-      },
-      [Symbol.iterator]() {
+    const next = (): IteratorResult<T[]> => {
+      if (isFirst) {
+        isFirst = false;
+        return { value: workingItems.slice() };
+      }
+      return getNext() === null
+        ? { done: true, value: workingItems.slice() }
+        : { value: workingItems.slice() };
+    };
+
+    const iterator = {
+      next,
+      [Symbol.iterator]: () => {
         // Reset to first lexicographic permutation.
         workingItems = initialItems.slice();
         getNext = getNextPermutation(workingItems, options);
         isFirst = true;
-        return this;
+        return iterator;
       },
     };
+
+    return iterator;
   }
 
-  // Don't care about slicing the items.
+  // Don't care about slicing the items. Note that this means that when using a
+  // `compare` function the order of items that compare as equal may be
+  // different each time the iterator is used.
   items.sort(compare);
   const getNext = getNextPermutation(items, options);
   const done = { done: true, value: items };
   const value = { value: items };
-  return {
-    next() {
-      if (isFirst) {
-        isFirst = false;
-        return value;
-      }
-      return getNext() === null ? done : value;
-    },
-    [Symbol.iterator]() {
+
+  const next = (): IteratorResult<T[]> => {
+    if (isFirst) {
+      isFirst = false;
+      return value;
+    }
+    return getNext() === null ? done : value;
+  };
+
+  const iterator = {
+    next,
+    [Symbol.iterator]: () => {
       // Reset to first lexicographic permutation.
       items.sort(compare);
       isFirst = true;
-      return this;
+      return iterator;
     },
   };
+
+  return iterator;
 };
 
 /**

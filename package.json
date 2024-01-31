@@ -1,6 +1,6 @@
 {
   "name": "@pbuk/rec-math",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "description": "Packages for recreational mathematics in the browser (or NodeJS)",
   "homepage": "https://rec-math.github.io/",
   "bugs": "https://github.com/rec-math/rec-math-js/issues",
@@ -9,7 +9,10 @@
     "url": "git+https://github.com/rec-math/rec-math-js.git"
   },
   "author": "pbuk (https://github.com/pb-uk)",
-  "keywords": ["recreational", "math"],
+  "keywords": [
+    "recreational",
+    "math"
+  ],
   "license": "MIT",
   "type": "module",
   "types": "types",
